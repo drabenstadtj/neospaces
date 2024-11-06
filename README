@@ -10,3 +10,44 @@ NeoSpaces is a retro-inspired, GeoCities-style platform designed to help friends
 - **Collaborative Zine**: A monthly or biweekly zine that each friend can contribute to, showcasing featured updates, art, and content from the group.
 - **Bulletin Boards**: Shared boards for events, upcoming plans, or recommendations—like a group calendar or bulletin board.
 - **Widget Library**: A collection of fun, interactive widgets to make each page unique, such as shared playlists, mood indicators, to-do lists, or “photo of the day.”
+
+---
+
+### 1. **Installing the App**
+   - **User Action**: The user downloads and installs the GeoSpace app on their device. After launching, they’re greeted by a simple setup screen where they can choose a username and set up their profile.
+   - **Behind the Scenes**: When the app starts, it initializes a local IPFS node (using js-ipfs) to handle decentralized file sharing. This node will be the user’s “portal” to the peer-to-peer network, allowing them to upload content and connect with friends.
+
+### 2. **Creating a Personal Page**
+   - **User Action**: The app opens a page editor where the user can add text, images, links, and even small widgets like guestbooks or playlists. They can also pick a theme or colors to personalize their space.
+   - **Behind the Scenes**: When the user clicks “Save,” the app packages all the page content into a directory and uploads it to IPFS. IPFS generates a **Content Identifier (CID)**, which acts as a unique address for the user’s page. The app also creates an **IPNS (InterPlanetary Name System)** entry that maps to this CID, ensuring the user’s page can be accessed via a stable link even when content is updated.
+
+### 3. **Sharing the Page with Friends via QR Code**
+   - **User Action**: Once the page is live, the app displays a QR code for the user’s IPNS address. The user can share this code with friends by showing it on their phone, printing it out, or sending it as an image.
+   - **Behind the Scenes**: The QR code encodes the IPNS address, which links to the user’s current CID. Whenever they update their page, the IPNS will point to the new CID, ensuring friends always see the latest version without needing a new code. The app also stores this IPNS address, so if the user scans a friend’s code, it can save that friend’s address in the local “Friends” directory.
+
+### 4. **Connecting with Friends**
+   - **User Action**: To add a friend, the user scans their friend’s QR code within the app. This automatically adds the friend’s page to their “Neighborhood” view.
+   - **Behind the Scenes**: Scanning a QR code captures the friend’s IPNS address. The app then retrieves the friend’s page from IPFS using this address, and caches it locally for fast access. IPFS’s caching ensures the page is stored on the user’s device after the first visit, making it available offline or when the friend is temporarily offline.
+
+### 5. **Browsing the Neighborhood**
+   - **User Action**: The user can visit their “Neighborhood” screen to see a list of connected friends, each represented by a small preview of their page. They can click on any friend’s name to visit their personal page, leave comments in the guestbook, or explore shared content.
+   - **Behind the Scenes**: When the user clicks on a friend’s page, the app fetches the latest content from IPFS using the friend’s IPNS address. If the friend has updated their page, IPFS retrieves the new content; otherwise, it loads from the local cache. This caching ensures smooth, reliable access even in cases where the peer might be offline.
+
+### 6. **Updating Personal Pages**
+   - **User Action**: When the user wants to make changes to their page, they open the editor, make updates, and click “Save” again.
+   - **Behind the Scenes**: The app re-uploads the modified page to IPFS, generating a new CID. The IPNS entry is then updated to point to the new CID, ensuring anyone using the user’s IPNS address sees the latest version. Friends who have previously connected will automatically see the new content when they next access the page.
+
+### 7. **Offline Access and Caching**
+   - **User Action**: The user can revisit friends’ pages even when they’re offline or when a friend’s node is down.
+   - **Behind the Scenes**: IPFS’s caching feature ensures that previously visited pages are stored locally. Additionally, the app can use a service worker to enable offline access, serving cached versions of each page when the user is offline.
+
+### 8. **Real-Time Notifications (Optional)**
+   - **User Action**: If a friend makes updates to their page, the user might see a small notification in the app.
+   - **Behind the Scenes**: This can be achieved using IPFS’s pubsub feature, which allows nodes to broadcast updates to connected peers. When a user updates their page, a pubsub message could notify friends, prompting the app to refresh the cached version.
+
+### Summary of User Flow
+1. **Install** the app → **Create** and save a page.
+2. **Share QR code** → **Add friends** by scanning codes.
+3. **Browse Neighborhood** → **Explore pages** and leave comments.
+4. **Update** personal page anytime → **Automatic notifications** when friends update.
+5. **Offline access** with cached pages for seamless browsing.
